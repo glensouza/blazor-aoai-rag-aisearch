@@ -32,113 +32,175 @@ Let's create that component that will be floating in the bottom right corner of 
 ```razor
 @rendermode InteractiveServer
 
-@inject ILocalStorageService LocalStorage
 @inject IJSRuntime JsRuntime
-@inject IChatCompletionService ChatCompletionService
+@using AspireApp4.Web.Plugins
+@using Azure
+@using Azure.Search.Documents.Indexes
+@using Markdig
+@using Microsoft.SemanticKernel;
+@using Microsoft.SemanticKernel.ChatCompletion;
+@using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-@if (!string.IsNullOrEmpty(this.whatAmI))
-{
-    <input type="checkbox" id="check" @onclick="this.ClearChat" />
-    <label class="chat-btn" for="check">
-        <i class="fa fa-commenting-o comment"></i>
-        <i class="fa fa-close close"></i>
-    </label>
-    <div class="wrapper">
-        <div class="container">
-            <div class="d-flex justify-content-center">
-                <div class="card" id="chat1" style="border-radius: 15px;">
-                    <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
-                        <p class="mb-0 fw-bold">Chat with Azure OpenAI</p>
-                    </div>
-                    <div class="card-body" id="messages-container" style="height: 500px; overflow-y: auto; background-color: #eee; border: 2px solid #0CCAF0">
-                        @foreach (string chatMessage in this.messages)
-                        {
-                            @if (chatMessage.Contains("|AI|"))
-                            {
-                                <div class="d-flex flex-row justify-content-start mb-4">
-                                    <div class="avatarSticky">
-                                        <img src="openai-chatgpt-logo-icon.webp" alt="avatar 1" style="width: 45px; height: 100%;">
-                                    </div>
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                                        @((MarkupString)chatMessage.Replace("|AI|", string.Empty))
-                                    </div>
-                                </div>
-                                continue;
-                            }
-
-                            <div class="d-flex flex-row justify-content-end mb-4">
-                                <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
-                                    @((MarkupString)chatMessage)
-                                </div>
-                                <div class="avatarSticky">
-                                    <img src="user-icon.png" alt="avatar 1" style="width: 45px; height: 100%;">
-                                </div>
-                            </div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(this.htmlStreamingResponse))
+<input type="checkbox" id="check" @onclick="this.ClearChat" />
+<label class="chat-btn" for="check">
+    <i class="fa fa-commenting-o comment"></i>
+    <i class="fa fa-close close"></i>
+</label>
+<div class="wrapper">
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <div class="card" id="chat1" style="border-radius: 15px;">
+                <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <p class="mb-0 fw-bold">Chat with Azure OpenAI</p>
+                </div>
+                <div class="card-body" id="messages-container" style="height: 500px; overflow-y: auto; background-color: #eee; border: 2px solid #0CCAF0">
+                    @foreach (string chatMessage in this.messages)
+                    {
+                        @if (chatMessage.Contains("|AI|"))
                         {
                             <div class="d-flex flex-row justify-content-start mb-4">
                                 <div class="avatarSticky">
-                                    <img src="openai-chatgpt-logo-icon-progress.webp" alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <img src="openai-chatgpt-logo-icon.webp" alt="avatar 1" style="width: 45px; height: 100%;">
                                 </div>
-                                <div class="p-3 ms-3" style="border-radius: 15px; background-color: #39c8ed; color: #ffff;">
-                                    @((MarkupString)this.htmlStreamingResponse)
+                                <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                    @((MarkupString)chatMessage.Replace("|AI|", string.Empty))
                                 </div>
                             </div>
+                            continue;
                         }
-                    </div>
-                    <div class="card-footer bg-info text-white" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Prompt..." @bind="this.message" id="Message" @onkeydown="this.EnterCheckMessage" disabled=@(!string.IsNullOrEmpty(this.htmlStreamingResponse)) />
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" @onclick="this.SendChat" disabled=@(!string.IsNullOrEmpty(this.htmlStreamingResponse))>
-                                    <i class="fa fa-paper-plane"></i>
-                                </button>
-                            </span>
+
+                        <div class="d-flex flex-row justify-content-end mb-4">
+                            <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
+                                @((MarkupString)chatMessage)
+                            </div>
+                            <div class="avatarSticky">
+                                <img src="user-icon.png" alt="avatar 1" style="width: 45px; height: 100%;">
+                            </div>
                         </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(this.htmlStreamingResponse))
+                    {
+                        <div class="d-flex flex-row justify-content-start mb-4">
+                            <div class="avatarSticky">
+                                <img src="openai-chatgpt-logo-icon-progress.webp" alt="avatar 1" style="width: 45px; height: 100%;">
+                            </div>
+                            <div class="p-3 ms-3" style="border-radius: 15px; background-color: #39c8ed; color: #ffff;">
+                                @((MarkupString)this.htmlStreamingResponse)
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-info text-white" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Prompt..." @bind="this.message" id="Message" @onkeydown="this.EnterCheckMessage" disabled=@(!string.IsNullOrEmpty(this.htmlStreamingResponse)) />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" @onclick="this.SendChat" disabled=@(!string.IsNullOrEmpty(this.htmlStreamingResponse))>
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-}
+</div>
 
 <HeadContent>
     <script>
         function scrollToBottom() {
-            var objDiv = document.getElementById("messages-container");
-            objDiv.scrollTop = objDiv.scrollHeight;
+        var objDiv = document.getElementById("messages-container");
+        objDiv.scrollTop = objDiv.scrollHeight;
         }
 
         function focusOnWhatAmI() {
-            var what = document.getElementById("WhatAmI");
-            if (what != null) {
-                setTimeout(() => what.focus(), 100);
-            }
+        var what = document.getElementById("WhatAmI");
+        if (what != null) {
+        setTimeout(() => what.focus(), 100);
+        }
         }
 
         function focusOnMessage() {
-            var message = document.getElementById("Message");
-            if (message != null) {
-                setTimeout(() => message.focus(), 100);
-            }
+        var message = document.getElementById("Message");
+        if (message != null) {
+        setTimeout(() => message.focus(), 100);
+        }
         }
     </script>
 </HeadContent>
 
 @code {
-    private string whatAmI = string.Empty;
+#pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+    [Inject]
+    private IConfiguration Configuration { get; set; }
+
+    private Kernel? kernel;
+    private IChatCompletionService? chatCompletionService;
+    private OpenAIPromptExecutionSettings? openAIPromptExecutionSettings;
+    private readonly ChatHistory chatHistory = [];
+    private bool loading = false;
+    private readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .UseBootstrap()
+        .UseEmojiAndSmiley()
+        .Build();
+
     private string message = string.Empty;
     private string htmlStreamingResponse = string.Empty;
-    private readonly ChatHistory chatHistory = [];
     private readonly List<string> messages = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        string aoaiKey = this.Configuration["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set"); string aoaiEndpoint = this.Configuration["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
+        string aoaiChatDeploymentName = this.Configuration["AzureOpenAI:ChatDeploymentName"] ?? throw new Exception("AzureOpenAI:ChatDeploymentName needs to be set");
+        string aoaiChatModel = this.Configuration["AzureOpenAI:ChatModel"] ?? throw new Exception("AzureOpenAI:ChatModel needs to be set");
+        string aoaiEmbeddingDeploymentName = this.Configuration["AzureOpenAI:EmbeddingDeploymentName"] ?? throw new Exception("AzureOpenAI:EmbeddingDeploymentName needs to be set");
+        string aoaiEmbeddingModel = this.Configuration["AzureOpenAI:EmbeddingModel"] ?? throw new Exception("AzureOpenAI:EmbeddingModel needs to be set");
+        string searchServiceEndpoint = this.Configuration["AzureSearch:Endpoint"] ?? throw new Exception("AzureSearch:Endpoint needs to be set");
+        string searchApiKey = this.Configuration["AzureSearch:Key"] ?? throw new Exception("AzureSearch:Key needs to be set");
+        string indexName = this.Configuration["AzureSearch:IndexName"] ?? throw new Exception("AzureSearch:IndexName needs to be set");
+
+        // Configure Semantic Kernel
+        IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
+
+        // Add OpenAI Chat Completion
+        kernelBuilder.AddAzureOpenAIChatCompletion(aoaiChatDeploymentName, aoaiEndpoint, aoaiKey);
+
+        // Register Azure OpenAI Text Embeddings Generation
+        kernelBuilder.Services.AddAzureOpenAITextEmbeddingGeneration(aoaiEmbeddingDeploymentName, aoaiEndpoint, aoaiKey);
+
+        // Register Search Index
+        kernelBuilder.Services.AddSingleton(_ => new SearchIndexClient(new Uri(searchServiceEndpoint), new AzureKeyCredential(searchApiKey)));
+
+        // Register Azure AI Search Vector Store
+        kernelBuilder.AddAzureAISearchVectorStore();
+
+        // Finalize Kernel Builder
+        this.kernel = kernelBuilder.Build();
+
+        // Add Search Plugin
+        this.kernel.Plugins.AddFromType<SearchPlugin>("SearchPlugin", this.kernel.Services);
+
+        // Add Time Information Plugin
+        this.kernel.Plugins.AddFromType<TimeInformationPlugin>();
+
+        // Chat Completion Service
+        this.chatCompletionService = this.kernel.Services.GetRequiredService<IChatCompletionService>();
+
+        // Create OpenAIPromptExecutionSettings
+        this.openAIPromptExecutionSettings = new OpenAIPromptExecutionSettings
+        {
+            ChatSystemPrompt = "You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task.",
+            Temperature = 0.9, // Set the temperature to 0.9
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto() // Auto invoke kernel functions
+        };
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            this.whatAmI = await this.LocalStorage.GetItemAsync<string>("whatAmI") ?? string.Empty;
             this.StateHasChanged();
         }
 
@@ -166,17 +228,20 @@ Let's create that component that will be floating in the bottom right corner of 
         this.messages.Add(this.message);
         this.message = string.Empty;
         string streamingResponse = string.Empty;
-        await foreach (StreamingChatMessageContent response in this.ChatCompletionService.GetStreamingChatMessageContentsAsync(this.chatHistory))
+
+        await foreach (StreamingChatMessageContent response in this.chatCompletionService!.GetStreamingChatMessageContentsAsync(this.chatHistory,
+                           executionSettings: this.openAIPromptExecutionSettings,
+                           kernel: this.kernel))
         {
             streamingResponse += response;
-            this.htmlStreamingResponse = Markdig.Markdown.ToHtml($"{streamingResponse} <i class=\"fa fa-ellipsis-h\"></i>");
+            this.htmlStreamingResponse = Markdown.ToHtml($"{streamingResponse} <i class=\"fa fa-ellipsis-h\"></i>");
             this.StateHasChanged();
             await this.JsRuntime.InvokeVoidAsync("scrollToBottom");
             await Task.Delay(100);
         }
 
         this.chatHistory.AddAssistantMessage(streamingResponse);
-        this.messages.Add($"{Markdig.Markdown.ToHtml($"|AI|{streamingResponse}")}");
+        this.messages.Add($"{Markdown.ToHtml($"|AI|{streamingResponse}")}");
         this.htmlStreamingResponse = string.Empty;
         await this.JsRuntime.InvokeVoidAsync("focusOnMessage");
     }
@@ -185,7 +250,7 @@ Let's create that component that will be floating in the bottom right corner of 
     {
         this.messages.Clear();
         this.chatHistory.Clear();
-        this.chatHistory.AddSystemMessage(this.whatAmI);
+        this.chatHistory.AddSystemMessage("You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task.");
         this.htmlStreamingResponse = string.Empty;
         this.message = string.Empty;
         this.messages.Add("|AI|Welcome to the AI chatbot! I am an AI chatbot trained by OpenAI.");
