@@ -44,23 +44,6 @@
 
           1. Click `Create`
 
-    - `Models` project
-
-        1. Right-click on the solution and select `Add` -> `New Project`
-        1. Select 'Class Library' and click `Next`
-
-            1. Configure your new project:
-
-                - Enter value for `Project name`
-                - Enter path for `Location
-
-            1. Click `Next`
-            1. Select:
-
-                - `.NET 9.0 (Standard Term Support)`
-
-            1. Click `Create`
-
 1. Let's add references to the `Models` project in the `SeedData` project
 
     1. Right-click on the `SeedData` project and select `Add` -> `Reference`
@@ -102,17 +85,17 @@
     1. Navigate to the `Browse` tab
     1. Search for and install the following packages:
 
-        | Package Name | SeedData Project | Models Project | Web Project |
-        | ------------ | ---------------- | -------------- | ----------- |
-        | Azure.AI.OpenAI | X | | |
-        | Azure.Search.Documents | | | X |
-        | Markdig | | | X |
-        | Markdown.ColorCode | | | X |
-        | Microsoft.Extensions.Configuration | X | | |
-        | Microsoft.Extensions.Configuration.UserSecrets | X | | |
-        | Microsoft.SemanticKernel | | | X |
-        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | | X |
-        | Microsoft.SemanticKernel.Connectors.OpenAI | | | X |
-        | Microsoft.SemanticKernel.Plugins.OpenApi | | | X |
+        | Package Name | SeedData Project | Web Project |
+        | ------------ | ---------------- | ----------- |
+        | Azure.AI.OpenAI | X | |
+        | Azure.Search.Documents | | X |
+        | Markdig | | X |
+        | Markdown.ColorCode | | X |
+        | Microsoft.Extensions.Configuration | X | |
+        | Microsoft.Extensions.Configuration.UserSecrets | X | |
+        | Microsoft.SemanticKernel | | X |
+        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | X |
+        | Microsoft.SemanticKernel.Connectors.OpenAI | | X |
+        | Microsoft.SemanticKernel.Plugins.OpenApi | | X |
 
 [<-- Back](./GettingStarted.md)

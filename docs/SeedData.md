@@ -4,9 +4,9 @@ There are a couple of ways to seed some data you'd like to chat with in the chat
 
 Since we're all enterprise Dotnet developers here I'd like to show you how to seed data using a console application for ultimate flexibility and control of your data sources. This is a more programmatic way to seed data and is more suited for enterprise applications, especially those that consume third-party apis and want to include the results as part of the search without saving files.
 
-## Shared model
+## Create a Console Application
 
-Open the `Models` project and rename the `Class1.cs` to `RAGSearchDocument.cs` then open it and replace it with the  following code:
+Create a file `RAGSearchDocument.cs` then open it and replace it with the  following code:
 
 ```csharp
 public class RAGSearchDocument
@@ -24,8 +24,6 @@ public class RAGSearchDocument
     public float[] ContentVector { get; set; }
 }
 ```
-
-## Create a Console Application
 
 Let's open up the `program.cs` file in the SeedData project. Here is the final code:
 
