@@ -22,37 +22,25 @@
 
 1. Run the project by clicking on the green play button in the top menu bar
 
-1. Let's add two more projects to the solution:
+1. Let's add another project to the solution, the `SeedData` project
 
-    - `SeedData` project
+    1. Right-click on the solution and select `Add` -> `New Project`
+    1. Select 'Console App' and click `Next`
 
-      1. Right-click on the solution and select `Add` -> `New Project`
-      1. Select 'Console App' and click `Next`
+        1. Configure your new project:
 
-          1. Configure your new project:
+            - Enter value for `Project name`
+            - Enter path for `Location
 
-              - Enter value for `Project name`
-              - Enter path for `Location
+        1. Click `Next`
+        1. Select:
 
-          1. Click `Next`
-          1. Select:
+            - `.NET 9.0 (Standard Term Support)`
+            - unselect `Enable container support`
+            - unselect `Do not use top-level statements`
+            - unselect `Enable native AOt publish`
 
-              - `.NET 9.0 (Standard Term Support)`
-              - unselect `Enable container support`
-              - unselect `Do not use top-level statements`
-              - unselect `Enable native AOt publish`
-
-          1. Click `Create`
-
-1. Let's add references to the `Models` project in the `SeedData` project
-
-    1. Right-click on the `SeedData` project and select `Add` -> `Reference`
-    1. Select the `Models` project and click `Add`
-
-1. Let's add references to the `Models` project in the `Aspire` project
-
-    1. Right-click on the `Aspire` project and select `Add` -> `Reference`
-    1. Select the `Models` project and click `Add`
+        1. Click `Create`
 
 1. Let's now add the secrets we kept from the `Infrastructure` setup
 
