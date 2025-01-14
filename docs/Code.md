@@ -154,12 +154,9 @@ Let's create that component that will be floating in the bottom right corner of 
     {
         string aoaiKey = this.Configuration["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set"); string aoaiEndpoint = this.Configuration["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
         string aoaiChatDeploymentName = this.Configuration["AzureOpenAI:ChatDeploymentName"] ?? throw new Exception("AzureOpenAI:ChatDeploymentName needs to be set");
-        string aoaiChatModel = this.Configuration["AzureOpenAI:ChatModel"] ?? throw new Exception("AzureOpenAI:ChatModel needs to be set");
         string aoaiEmbeddingDeploymentName = this.Configuration["AzureOpenAI:EmbeddingDeploymentName"] ?? throw new Exception("AzureOpenAI:EmbeddingDeploymentName needs to be set");
-        string aoaiEmbeddingModel = this.Configuration["AzureOpenAI:EmbeddingModel"] ?? throw new Exception("AzureOpenAI:EmbeddingModel needs to be set");
         string searchServiceEndpoint = this.Configuration["AzureSearch:Endpoint"] ?? throw new Exception("AzureSearch:Endpoint needs to be set");
         string searchApiKey = this.Configuration["AzureSearch:Key"] ?? throw new Exception("AzureSearch:Key needs to be set");
-        string indexName = this.Configuration["AzureSearch:IndexName"] ?? throw new Exception("AzureSearch:IndexName needs to be set");
 
         // Configure Semantic Kernel
         IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
