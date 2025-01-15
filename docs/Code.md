@@ -210,7 +210,8 @@ Let's create that component that will be floating in the bottom right corner of 
 
     protected override async Task OnInitializedAsync()
     {
-        string aoaiKey = this.Configuration["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set"); string aoaiEndpoint = this.Configuration["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
+        string aoaiKey = this.Configuration["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set");
+        string aoaiEndpoint = this.Configuration["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
         string aoaiChatDeploymentName = this.Configuration["AzureOpenAI:ChatDeploymentName"] ?? throw new Exception("AzureOpenAI:ChatDeploymentName needs to be set");
         string aoaiEmbeddingDeploymentName = this.Configuration["AzureOpenAI:EmbeddingDeploymentName"] ?? throw new Exception("AzureOpenAI:EmbeddingDeploymentName needs to be set");
         string searchServiceEndpoint = this.Configuration["AzureSearch:Endpoint"] ?? throw new Exception("AzureSearch:Endpoint needs to be set");
@@ -315,7 +316,7 @@ Let's create that component that will be floating in the bottom right corner of 
 }
 ```
 
-Next we add some CSS by adding a file `ChatCompnent.razor.css` file:
+Next we add some CSS by adding a file `ChatComponent.razor.css` file:
 
 ```css
 #chat1 .form-control ~ .form-notch div {
@@ -488,7 +489,7 @@ Let's add the chatbot so that it's available on all pages. Open the `App.razor` 
 
 ```razor
     <Routes />
-    <ChatBotComponent></ChatBotComponent>
+    <ChatComponent></ChatComponent>
 ```
 
 [<-- Back](./GettingStarted.md)

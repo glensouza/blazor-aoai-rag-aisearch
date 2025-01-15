@@ -75,15 +75,15 @@
 
         | Package Name | SeedData Project | Web Project |
         | ------------ | ---------------- | ----------- |
-        | Azure.AI.OpenAI | X | |
-        | Azure.Search.Documents | | X |
-        | Markdig | | X |
-        | Markdown.ColorCode | | X |
-        | Microsoft.Extensions.Configuration | X | |
-        | Microsoft.Extensions.Configuration.UserSecrets | X | |
-        | Microsoft.SemanticKernel | | X |
-        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | X |
-        | Microsoft.SemanticKernel.Connectors.OpenAI | | X |
-        | Microsoft.SemanticKernel.Plugins.OpenApi | | X |
+        | Azure.AI.OpenAI | [X] | |
+        | Azure.Search.Documents | [X] | [X] |
+        | Markdig | | [X] |
+        | Markdown.ColorCode | | [X] |
+        | Microsoft.Extensions.Configuration | [X] | |
+        | Microsoft.Extensions.Configuration.UserSecrets | [X] | |
+        | Microsoft.SemanticKernel | | [X] |
+        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | [X] |
+        | Microsoft.SemanticKernel.Connectors.OpenAI | | [X] |
+        | Microsoft.SemanticKernel.Plugins.OpenApi | | [X] |
 
 [<-- Back](./GettingStarted.md)

@@ -45,6 +45,7 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
     .Build();
 
+string aoaiKey = config["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
 string aoaiEndpoint = config["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
 string aoaiChatDeploymentName = config["AzureOpenAI:ChatDeploymentName"] ?? throw new Exception("AzureOpenAI:ChatDeploymentName needs to be set");
 string aoaiEmbeddingDeploymentName = config["AzureOpenAI:EmbeddingDeploymentName"] ?? throw new Exception("AzureOpenAI:EmbeddingDeploymentName needs to be set");
