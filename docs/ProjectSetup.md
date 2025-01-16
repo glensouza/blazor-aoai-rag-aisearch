@@ -74,16 +74,13 @@
     1. Search for and install the following packages:
 
         | Package Name | SeedData Project | Web Project |
-        | ------------ | ---------------- | ----------- |
-        | Azure.AI.OpenAI | [X] | |
-        | Azure.Search.Documents | [X] | [X] |
-        | Markdig | | [X] |
-        | Markdown.ColorCode | | [X] |
-        | Microsoft.Extensions.Configuration | [X] | |
-        | Microsoft.Extensions.Configuration.UserSecrets | [X] | |
-        | Microsoft.SemanticKernel | | [X] |
-        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | [X] |
-        | Microsoft.SemanticKernel.Connectors.OpenAI | | [X] |
-        | Microsoft.SemanticKernel.Plugins.OpenApi | | [X] |
+        | :----------- | :--------------: | :---------: |
+        | Azure.AI.OpenAI | :x: | |
+        | Azure.Search.Documents | :x: | :x: |
+        | Markdig | | :x: |
+        | Microsoft.Extensions.Configuration.UserSecrets | :x: | |
+        | Microsoft.SemanticKernel | | :x: |
+        | Microsoft.SemanticKernel.Connectors.AzureAISearch | | :x: |
+        | Microsoft.SemanticKernel.Plugins.OpenApi | | :x: |
 
 [<-- Back](./GettingStarted.md)
