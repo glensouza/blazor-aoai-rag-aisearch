@@ -1,4 +1,15 @@
-﻿using System.ClientModel;
+﻿// ***********************************************************************
+// Author           : glensouza
+// Created          : 01-14-2025
+//
+// Last Modified By : glensouza
+// Last Modified On : 01-16-2025
+// ***********************************************************************
+// <summary>This Console App is to seed data on Azure AI Search.</summary>
+// ***********************************************************************
+
+using System.ClientModel;
+using System.Diagnostics;
 using System.Reflection;
 using Azure;
 using Azure.AI.OpenAI;
@@ -128,7 +139,6 @@ ClientResult<ChatCompletion>? seedData = await chatClient.CompleteChatAsync(
     new SystemChatMessage("You are an HR manager at Contoso Hotels, expert at employee handbook creation."),
     new UserChatMessage("Create a privacy policy, vacation policy, and describe a few job roles")
 );
-progress.Report("Seed data generation completed.");
 
 // Collect the seed data from chat completion text
 string text = string.Empty;
@@ -138,6 +148,19 @@ foreach (ChatMessageContentPart? message in seedData.Value.Content)
     Console.WriteLine($"{message.Kind}: {message.Text}");
     text += message.Text;
 }
+
+// Output the employee handbook to text file, first checking if it already exists
+string filePath = "employee_handbook.txt";
+if (File.Exists(filePath))
+{
+    File.Delete(filePath);
+}
+
+File.WriteAllText(filePath, text);
+
+// Open the text file for the user to review
+Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+progress.Report("Seed data generation completed.");
 
 // Chunk the text into smaller pieces
 progress.Report("Chunking text into smaller pieces...");
@@ -189,6 +212,19 @@ foreach (ChatMessageContentPart? message in seedData.Value.Content)
     Console.WriteLine($"{message.Text}");
     text += message.Text;
 }
+
+// Output the good questions to text file, first checking if it already exists
+filePath = "good_questions.txt";
+if (File.Exists(filePath))
+{
+    File.Delete(filePath);
+}
+
+File.WriteAllText(filePath, text);
+
+// Open the text file for the user to review
+Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+
 progress.Report("Good questions generation completed.");
 
 return;

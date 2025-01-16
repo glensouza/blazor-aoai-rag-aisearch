@@ -1,4 +1,15 @@
-﻿@rendermode InteractiveServer
+﻿@*
+***********************************************************************
+Author           : glensouza
+Created          : 01-14-2025
+
+Last Modified By : glensouza
+Last Modified On : 01-16-2025
+***********************************************************************
+<summary>Chatbot component to interact with Azure OpenAI</summary>
+***********************************************************************
+*@
+@rendermode InteractiveServer
 
 @inject IJSRuntime JsRuntime
 @using Azure
@@ -9,11 +20,14 @@
 @using Microsoft.SemanticKernel.ChatCompletion;
 @using Microsoft.SemanticKernel.Connectors.OpenAI;
 
+@* when checkbox is checked, the chatbot appears, otherwise it clears chat history and hides *@
 <input type="checkbox" id="check" @onclick="this.ClearChat" />
 <label class="chat-btn" for="check">
     <i class="fa fa-commenting-o comment"></i>
     <i class="fa fa-close close"></i>
 </label>
+
+@* the chatbot ui *@
 <div class="wrapper">
     <div class="container">
         <div class="d-flex justify-content-center">
@@ -22,10 +36,12 @@
                     <p class="mb-0 fw-bold">Chat with Azure OpenAI</p>
                 </div>
                 <div class="card-body" id="messages-container" style="height: 500px; overflow-y: auto; background-color: #eee; border: 2px solid #0CCAF0">
+                    @* display each message in history *@
                     @foreach (string chatMessage in this.messages)
                     {
                         @if (chatMessage.Contains("|AI|"))
                         {
+                            @* AI message *@
                             <div class="d-flex flex-row justify-content-start mb-4">
                                 <div class="avatarSticky">
                                     <img src="openai-chatgpt-logo-icon.webp" alt="avatar 1" style="width: 45px; height: 100%;">
@@ -37,6 +53,7 @@
                             continue;
                         }
 
+                        @* User message *@
                         <div class="d-flex flex-row justify-content-end mb-4">
                             <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
                                 @((MarkupString)chatMessage)
@@ -47,6 +64,7 @@
                         </div>
                     }
 
+                    @* display the streaming response *@
                     @if (!string.IsNullOrEmpty(this.htmlStreamingResponse))
                     {
                         <div class="d-flex flex-row justify-content-start mb-4">
@@ -59,6 +77,8 @@
                         </div>
                     }
                 </div>
+                
+                @* the form for user to ask question *@
                 <div class="card-footer bg-info text-white" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Prompt..." @bind="this.message" id="Message" @onkeydown="this.EnterCheckMessage" disabled=@(!string.IsNullOrEmpty(this.htmlStreamingResponse)) />
@@ -74,18 +94,12 @@
     </div>
 </div>
 
+@* Include this javascript on the head section of html to be used by the chatbot *@
 <HeadContent>
     <script>
         function scrollToBottom() {
             var objDiv = document.getElementById("messages-container");
             objDiv.scrollTop = objDiv.scrollHeight;
-        }
-
-        function focusOnWhatAmI() {
-            var what = document.getElementById("WhatAmI");
-            if (what != null) {
-                setTimeout(() => what.focus(), 100);
-            }
         }
 
         function focusOnMessage() {
@@ -97,6 +111,7 @@
     </script>
 </HeadContent>
 
+@* ReSharper disable once CSharpWarnings::CS8618 *@
 @code {
 #pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
@@ -118,8 +133,11 @@
     private string htmlStreamingResponse = string.Empty;
     private readonly List<string> messages = [];
 
+    #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     protected override async Task OnInitializedAsync()
+    #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
+        // Get Azure OpenAI settings
         string aoaiKey = this.Configuration["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set"); string aoaiEndpoint = this.Configuration["AzureOpenAI:Endpoint"] ?? throw new Exception("AzureOpenAI:Endpoint needs to be set");
         string aoaiChatDeploymentName = this.Configuration["AzureOpenAI:ChatDeploymentName"] ?? throw new Exception("AzureOpenAI:ChatDeploymentName needs to be set");
         string aoaiEmbeddingDeploymentName = this.Configuration["AzureOpenAI:EmbeddingDeploymentName"] ?? throw new Exception("AzureOpenAI:EmbeddingDeploymentName needs to be set");
@@ -144,34 +162,23 @@
         // Finalize Kernel Builder
         this.kernel = kernelBuilder.Build();
 
-        // Add Search Plugin
-        this.kernel.Plugins.AddFromType<SearchPlugin>("SearchPlugin", this.kernel.Services);
-
-        // Add Time Information Plugin
-        this.kernel.Plugins.AddFromType<TimeInformationPlugin>();
+        // Add Plugins
+        this.kernel.Plugins.AddFromType<SearchPlugin>(nameof(SearchPlugin), this.kernel.Services);
+        this.kernel.Plugins.AddFromType<TimeInformationPlugin>(nameof(TimeInformationPlugin), this.kernel.Services);
 
         // Chat Completion Service
         this.chatCompletionService = this.kernel.Services.GetRequiredService<IChatCompletionService>();
 
         // Create OpenAIPromptExecutionSettings
         this.openAIPromptExecutionSettings = new OpenAIPromptExecutionSettings
-            {
-                ChatSystemPrompt = "You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task.",
-                Temperature = 0.9, // Set the temperature to 0.9
-                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto() // Auto invoke kernel functions
-            };
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
         {
-            this.StateHasChanged();
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
+            ChatSystemPrompt = "You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task. You can also answer generic questions about the world as it is a global company.",
+            Temperature = 0.9, // Set the temperature to 0.9
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto() // Auto invoke kernel functions
+        };
     }
 
+    // Check if the user pressed Enter key
     private async Task EnterCheckMessage(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
@@ -180,6 +187,7 @@
         }
     }
 
+    // Send chat message to the AI
     private async Task SendChat()
     {
         if (string.IsNullOrEmpty(this.message))
@@ -211,11 +219,12 @@
         await this.JsRuntime.InvokeVoidAsync("focusOnMessage");
     }
 
+    // Clear the chat
     private async Task ClearChat()
     {
         this.messages.Clear();
         this.chatHistory.Clear();
-        this.chatHistory.AddSystemMessage("You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task.");
+        this.chatHistory.AddSystemMessage("You are an HR virtual assistant at Contoso Hotels, expert at answering employee questions related to privacy policy, vacation policy, and describe a few job roles. Ask followup questions if something is unclear or more data is needed to complete a task. You can also answer generic questions about the world as it is a global company.");
         this.htmlStreamingResponse = string.Empty;
         this.message = string.Empty;
         this.messages.Add("|AI|Welcome to the AI chatbot! I am an AI chatbot trained by OpenAI.");

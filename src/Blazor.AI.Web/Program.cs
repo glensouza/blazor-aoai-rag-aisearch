@@ -1,4 +1,5 @@
 using Blazor.AI.Web.Components;
+using Microsoft.Extensions.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

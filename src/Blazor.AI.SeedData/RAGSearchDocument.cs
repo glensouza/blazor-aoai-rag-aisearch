@@ -1,4 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿// ***********************************************************************
+// Author           : glensouza
+// Created          : 01-14-2025
+//
+// Last Modified By : glensouza
+// Last Modified On : 01-16-2025
+// ***********************************************************************
+// <summary>This class is for Azure AI Search model.</summary>
+// ***********************************************************************
+
+using System.Text.Json.Serialization;
 
 namespace Blazor.AI.SeedData;
 
