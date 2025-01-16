@@ -5,14 +5,15 @@ namespace Blazor.AI.SeedData;
 public class RAGSearchDocument
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
     [JsonPropertyName("title")]
-    public string Title { get; set; }
+    public string Title { get; init; } = string.Empty;
 
     [JsonPropertyName("content")]
-    public string Content { get; set; }
+    public string Content { get; init; } = string.Empty;
 
     [JsonPropertyName("contentVector")]
-    public float[] ContentVector { get; set; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public float[] ContentVector { get; set; } = [];
 }
