@@ -1,14 +1,4 @@
-﻿// ***********************************************************************
-// Author           : glensouza
-// Created          : 01-14-2025
-//
-// Last Modified By : glensouza
-// Last Modified On : 01-16-2025
-// ***********************************************************************
-// <summary>This Console App is to seed data on Azure AI Search.</summary>
-// ***********************************************************************
-
-using System.ClientModel;
+﻿using System.ClientModel;
 using System.Diagnostics;
 using System.Reflection;
 using Azure;
@@ -32,7 +22,7 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
     .Build();
 stopwatch.Stop();
-progress.Report($"End Getting values from configuration... (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"End Getting values from configuration... (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Retrieve configuration values from user secrets
 string aoaiKey = config["AzureOpenAI:Key"] ?? throw new Exception("AzureOpenAI:Key needs to be set");
@@ -43,7 +33,6 @@ string aoaiEmbeddingModel = config["AzureOpenAI:EmbeddingModel"] ?? throw new Ex
 string searchServiceEndpoint = config["AzureSearch:Endpoint"] ?? throw new Exception("AzureSearch:Endpoint needs to be set");
 string searchApiKey = config["AzureSearch:Key"] ?? throw new Exception("AzureSearch:Key needs to be set");
 string indexName = config["AzureSearch:IndexName"] ?? throw new Exception("AzureSearch:IndexName needs to be set");
-progress.Report("End Getting values from configuration...");
 
 // Initialize Azure OpenAI and Search clients
 progress.Report("Initializing Azure OpenAI and Search clients...");
@@ -53,7 +42,7 @@ ChatClient chatClient = azureClient.GetChatClient(aoaiChatDeploymentName);
 EmbeddingClient embedClient = azureClient.GetEmbeddingClient(aoaiEmbeddingModel);
 SearchIndexClient indexClient = new(new Uri(searchServiceEndpoint), new AzureKeyCredential(searchApiKey));
 stopwatch.Stop();
-progress.Report($"End Initializing Azure OpenAI and Search clients... (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"End Initializing Azure OpenAI and Search clients... (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Delete existing index if it exists
 try
@@ -63,7 +52,7 @@ try
     indexClient.GetIndex(indexName);
     indexClient.DeleteIndex(indexName);
     stopwatch.Stop();
-    progress.Report($"Index deleted successfully. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+    progress.Report($"Index deleted successfully. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 }
 catch (RequestFailedException ex) when (ex.Status == 404)
 {
@@ -136,14 +125,14 @@ progress.Report("Starting index creation...");
 stopwatch.Restart();
 await indexClient.CreateOrUpdateIndexAsync(searchIndex);
 stopwatch.Stop();
-progress.Report($"Index creation completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Index creation completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Initialize search client
 progress.Report("Initializing search client...");
 stopwatch.Restart();
 SearchClient searchClient = indexClient.GetSearchClient(indexName);
 stopwatch.Stop();
-progress.Report($"Search client initialized. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Search client initialized. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Generate seed data using chat completion feature with Azure OpenAI
 List<ChatMessage> chatHistory =
@@ -157,7 +146,7 @@ progress.Report("Generating seed data using chat completion...");
 stopwatch.Restart();
 ClientResult<ChatCompletion>? seedData = await chatClient.CompleteChatAsync(chatHistory);
 stopwatch.Stop();
-progress.Report($"Seed data generation completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Seed data generation completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Collect the seed data from chat completion text
 string text = string.Empty;
@@ -200,14 +189,14 @@ foreach (string chunk in chunks)
     });
 }
 stopwatch.Stop();
-progress.Report($"Text chunking completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Text chunking completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Upload documents to the search index
 progress.Report("Uploading documents to the search index...");
 stopwatch.Restart();
 UploadDocuments(documents);
 stopwatch.Stop();
-progress.Report($"Document upload completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Document upload completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Perform a search query on the index to test that it works
 progress.Report("Performing search query...");
@@ -218,7 +207,7 @@ foreach (SearchResult<RAGSearchDocument> result in ss.Value.GetResults())
     Console.WriteLine($"Id: {result.Document.Id}, Title: {result.Document.Title}, Content: {result.Document.Content}");
 }
 stopwatch.Stop();
-progress.Report($"Search query completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Search query completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 // Generate good questions for employee to ask about the employee handbook
 progress.Report("Generating good questions for employee to ask...");
@@ -246,7 +235,7 @@ File.WriteAllText(filePath, text);
 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
 
 stopwatch.Stop();
-progress.Report($"Good questions generation completed. (Elapsed time: {stopwatch.ElapsedMilliseconds} ms)");
+progress.Report($"Good questions generation completed. (Elapsed time: {FormatElapsedTime(stopwatch)})");
 
 return;
 
@@ -307,4 +296,12 @@ static List<string> ChunkText(string text, int maxChunkSize)
     }
 
     return chunks;
+}
+
+// Function to format elapsed time
+static string FormatElapsedTime(Stopwatch stopwatch)
+{
+    return stopwatch.Elapsed.TotalSeconds >= 1
+        ? $"{stopwatch.Elapsed.TotalSeconds:F2} seconds"
+        : $"{stopwatch.ElapsedMilliseconds} ms";
 }
