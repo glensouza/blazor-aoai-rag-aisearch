@@ -151,13 +151,13 @@ Last Modified On : 01-16-2025
         kernelBuilder.AddAzureOpenAIChatCompletion(aoaiChatDeploymentName, aoaiEndpoint, aoaiKey);
 
         // Register Azure OpenAI Text Embeddings Generation
-        kernelBuilder.Services.AddAzureOpenAITextEmbeddingGeneration(aoaiEmbeddingDeploymentName, aoaiEndpoint, aoaiKey);
-
+        kernelBuilder.Services.AddAzureOpenAIEmbeddingGenerator(aoaiEmbeddingDeploymentName, aoaiEndpoint, aoaiKey);
+        
         // Register Search Index
         kernelBuilder.Services.AddSingleton(_ => new SearchIndexClient(new Uri(searchServiceEndpoint), new AzureKeyCredential(searchApiKey)));
 
         // Register Azure AI Search Vector Store
-        kernelBuilder.AddAzureAISearchVectorStore();
+        kernelBuilder.Services.AddAzureAISearchVectorStore();
 
         // Finalize Kernel Builder
         this.kernel = kernelBuilder.Build();
